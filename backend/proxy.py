@@ -2,10 +2,15 @@ import os
 from flask import Flask, request
 from flask_cors import CORS  # 允许跨域, 一知半解
 import requests
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
-PUBMED_API_KEY=os.environ.get("PUBMED_API_KEY")
+#load_dotenv()
+##PUBMED_API_KEY=os.environ.get("PUBMED_API_KEY")
+
+PUBMED_API_KEY=os.getenv("PUBMED_API_KEY")
+
+if not PUBMED_API_KEY:
+    raise ValueError("KEY environment variable is not set")
 print(PUBMED_API_KEY)
 app = Flask(__name__)
 CORS(app)  # 允许所有来源访问
