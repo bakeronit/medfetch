@@ -7,11 +7,6 @@ import requests
 #load_dotenv()
 ##PUBMED_API_KEY=os.environ.get("PUBMED_API_KEY")
 
-PUBMED_API_KEY=os.getenv("PUBMED_API_KEY")
-
-if not PUBMED_API_KEY:
-    raise ValueError("KEY environment variable is not set")
-print(PUBMED_API_KEY)
 app = Flask(__name__)
 CORS(app)  # 允许所有来源访问
 
@@ -30,4 +25,9 @@ def proxy():
     })
 
 if __name__ == '__main__':
+    PUBMED_API_KEY=os.getenv("PUBMED_API_KEY")
+
+    if not PUBMED_API_KEY:
+        raise ValueError("PUBMED_API_KEY environment variable is not set")
+    print(PUBMED_API_KEY)
     app.run(host="0.0.0.0", port=5000)
