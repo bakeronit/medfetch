@@ -25,6 +25,7 @@ def proxy():
     })
 
 if __name__ == '__main__':
+    print("This is a proxy server for using PubMed API")
     PUBMED_API_KEY=os.getenv("PUBMED_API_KEY")
 
     if not PUBMED_API_KEY:

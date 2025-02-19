@@ -2,7 +2,7 @@
 class PubMedAPI {
     constructor() {
         this.SEARCH_URL = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi';
-        // this.FETCH_URL = 'https://medfetch-production.up.railway.app/proxy';
+        this.FETCH_URL = 'https://medfetch-production.up.railway.app/proxy';
         //this.FETCH_URL = 'http://127.0.0.1:5000/proxy';
     }
 
