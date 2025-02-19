@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 PUBMED_API_KEY=os.environ.get("PUBMED_API_KEY")
-
+print(PUBMED_API_KEY)
 app = Flask(__name__)
 CORS(app)  # 允许所有来源访问
 
