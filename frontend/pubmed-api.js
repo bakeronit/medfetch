@@ -3,7 +3,10 @@ class PubMedAPI {
     constructor() {
         this.SEARCH_URL = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi';
         this.FETCH_URL = 'https://medfetch-production.up.railway.app/proxy';
-        //this.FETCH_URL = 'http://127.0.0.1:5000/proxy';
+        //this.FETCH_URL = 'http://127.0.0.1:5000/proxy'; // for local testing
+
+        this.CONCURRENT_REQUESTS = 10; // Maximum concurrent requests
+        this.REQUEST_DELAY = 100; // Delay between requests in ms (3 requests per second)
     }
 
     async searchPMIDs(affiliation, weeksAgo = 1) {
@@ -40,6 +43,54 @@ class PubMedAPI {
             throw error;
         }
     }
+
+    async fetchPublicationDetailsWithRateLimit(pmids) {
+        const queue = [...pmids];
+        const results = new Array(pmids.length);
+        const executing = new Set();
+
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function executeRequest(pmid, index) {
+            try {
+                executing.add(pmid);
+                const result = await this.fetchPublicationDetails(pmid);
+                results[index] = result;
+            } catch (error) {
+                console.error(`Error fetching PMID ${pmid}:`, error);
+                results[index] = null;
+            } finally {
+                executing.delete(pmid);
+                await delay(this.REQUEST_DELAY);
+            }
+        }
+
+        async function processQueue() {
+            while (queue.length > 0) {
+                if (executing.size < this.CONCURRENT_REQUESTS) {
+                    const pmid = queue.shift();
+                    const index = pmids.indexOf(pmid);
+                    executeRequest.call(this, pmid, index);
+                }
+                await delay(100); // Small delay to check queue
+            }
+        }
+
+        // Wait for all requests to complete
+        await Promise.all([
+            processQueue.call(this),
+            ...Array.from({ length: this.CONCURRENT_REQUESTS }, () =>
+                processQueue.call(this)
+            )
+        ]);
+
+        // Wait for any remaining executing requests
+        while (executing.size > 0) {
+            await delay(100);
+        }
+
+        return results.filter(result => result !== null);
+    }    
 
     async fetchPublicationDetails(pmid) {
         const params = new URLSearchParams({

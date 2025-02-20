@@ -77,9 +77,11 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
         `;
 
         // Fetch details for each PMID
-        const publications = await Promise.all(
-            pmids.map(pmid => pubmedAPI.fetchPublicationDetails(pmid))
-        );
+        //const publications = await Promise.all(
+        //    pmids.map(pmid => pubmedAPI.fetchPublicationDetails(pmid))
+        //);
+        const publications = await pubmedAPI.fetchPublicationDetailsWithRateLimit(pmids);
+        console.log("here")
 
         // Filter out null results and format each publication
         const formattedPublications = publications

@@ -30,5 +30,4 @@ if __name__ == '__main__':
 
     if not PUBMED_API_KEY:
         raise ValueError("PUBMED_API_KEY environment variable is not set")
-    print(PUBMED_API_KEY)
     app.run(host="0.0.0.0", port=5000)
